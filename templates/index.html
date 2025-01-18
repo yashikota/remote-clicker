@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Click Signal Controller</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.8.1/socket.io.min.js"></script>
+    <script>
+        const socket = io();
+
+        function sendClickSignal() {
+            socket.emit("click_signal");
+        }
+
+        socket.on("server_response", (data) => {
+            document.getElementById("status").textContent = data.status;
+        });
+
+        window.onload = () => {
+            socket.emit("connect_client");
+        };
+    </script>
+</head>
+
+<body>
+    <h1>Click Signal Controller</h1>
+    <button onclick="sendClickSignal()">Send Click Signal</button>
+    <p id="status">Waiting for server...</p>
+</body>
+
+</html>
