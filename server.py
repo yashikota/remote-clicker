@@ -1,39 +1,37 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, request
 from flask_socketio import SocketIO, emit
-import socket
 
 app = Flask(__name__)
 socketio = SocketIO(app)
 
-HOST = "0.0.0.0"
-PORT = 12345
-conn = None
-
-server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-server_socket.bind((HOST, PORT))
-server_socket.listen(1)
-print(f"Server listening on {HOST}:{PORT}")
+connected_clients = {}
 
 @app.route("/")
 def index():
     return render_template("index.html")
 
+@socketio.on("connect")
+def handle_connect():
+    client_id = request.sid
+    connected_clients[client_id] = True
+    print(f"Client connected: {client_id}")
+    emit("server_response", {"status": f"Client connected: {client_id}"}, to=client_id)
+
+@socketio.on("disconnect")
+def handle_disconnect():
+    client_id = request.sid
+    if client_id in connected_clients:
+        del connected_clients[client_id]
+    print(f"Client disconnected: {client_id}")
+
 @socketio.on("click_signal")
 def handle_click_signal():
-    global conn
-    if conn:
-        conn.send(b"CLICK")
+    client_id = request.sid
+    if client_id in connected_clients:
+        emit("server_response", {"status": "Click signal received!"}, to=client_id)
         print("Click signal sent to client.")
-        emit("server_response", {"status": "Click signal sent!"})
     else:
-        emit("server_response", {"status": "No client connected!"})
-
-@socketio.on("connect_client")
-def connect_client():
-    global conn
-    conn, addr = server_socket.accept()
-    print(f"Connected by {addr}")
-    emit("server_response", {"status": f"Client connected: {addr}"})
+        emit("server_response", {"status": "No client connected!"}, to=client_id)
 
 if __name__ == "__main__":
     socketio.run(app, host="0.0.0.0", port=5000)

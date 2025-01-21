@@ -8,4 +8,5 @@ dependencies = [
     "flask>=3.1.0",
     "flask-socketio>=5.5.1",
     "pyautogui>=0.9.54",
+    "websocket-client>=1.8.0",
 ]

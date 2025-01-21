@@ -1,20 +1,25 @@
-import socket
+from websocket import create_connection
 import pyautogui
+import json
 
-SERVER_IP = "192.168.1.2"
-SERVER_PORT = 12345
-
-client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-client.connect((SERVER_IP, SERVER_PORT))
-print("Connected to server")
+SERVER_URL = "ws://http://150.89.229.144:5000/socket.io/?EIO=4&transport=websocket"
 
 try:
+    ws = create_connection(SERVER_URL)
+    print("Connected to server")
+
     while True:
-        message = client.recv(1024).decode()
-        if message == "CLICK":
-            pyautogui.click()
-            print("Clicked!")
+        response = ws.recv()
+
+        try:
+            data = json.loads(response)
+            if data.get("type") == "event" and data.get("name") == "click_signal":
+                pyautogui.click()
+                print("Clicked!")
+        except json.JSONDecodeError:
+            pass
+
 except KeyboardInterrupt:
     print("Client shutting down.")
 finally:
-    client.close()
+    ws.close()
