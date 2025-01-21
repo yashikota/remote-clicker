@@ -1,8 +1,9 @@
-from websocket import create_connection
+from websocket import create_connection, enableTrace
 import pyautogui
 import json
 
-SERVER_URL = "ws://http://150.89.229.144:5000/socket.io/?EIO=4&transport=websocket"
+enableTrace(True)
+SERVER_URL = "ws://150.89.229.144:5000/socket.io/?EIO=4&transport=websocket"
 
 try:
     ws = create_connection(SERVER_URL)
