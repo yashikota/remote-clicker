@@ -3,7 +3,7 @@ import pyautogui
 
 app = Flask(__name__)
 
-@app.route("/click", methods=["POST"])
+@app.route("/click")
 def click():
     try:
         pyautogui.click()
