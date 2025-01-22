@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Remote Clicker</title>
+</head>
+
+<body>
+    <h1>Remote Clicker</h1>
+    <button id="sendClick">Send Click</button>
+
+    <script>
+        document.getElementById("sendClick").addEventListener("click", async () => {
+            try {
+                const response = await fetch("http://host_ip:5000/send_click", {
+                    method: "POST",
+                });
+                const result = await response.json();
+                alert(result.message || "Success");
+            } catch (error) {
+                alert("Error: " + error.message);
+            }
+        });
+    </script>
+</body>
+
+</html>

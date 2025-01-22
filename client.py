@@ -1,32 +1,16 @@
-import websocket
-import json
+from flask import Flask
 import pyautogui
 
-websocket.enableTrace(True)
+app = Flask(__name__)
 
-SERVER_URL = "ws://150.89.229.144:5000/socket.io/?EIO=4&transport=websocket"
+@app.route("/click", methods=["POST"])
+def click():
+    try:
+        pyautogui.click()
+        print("Clicked!")
+        return "Clicked!", 200
+    except Exception as e:
+        return f"Error: {str(e)}", 500
 
-try:
-    ws = websocket.create_connection(SERVER_URL)
-    print("Connected to server")
-
-    while True:
-        response = ws.recv()
-        print(f"Raw response: {response}")
-
-        try:
-            data = json.loads(response)
-
-            if isinstance(data, dict) and data.get("type") == "event" and data.get("name") == "click_signal":
-                pyautogui.click()
-                print("Clicked!")
-        except json.JSONDecodeError:
-            print(f"Invalid JSON received: {response}")
-        except AttributeError:
-            print(f"Unexpected data structure: {response}")
-except Exception as e:
-    print(f"Error: {e}")
-finally:
-    if "ws" in locals():
-        ws.close()
-        print("WebSocket connection closed.")
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=8888)
