@@ -9,8 +9,11 @@ app = Flask(__name__)
 @app.route("/click")
 def click():
     try:
-        os.makedirs(r"C:\l", exist_ok=True)
-        os.makedirs(r"C:\r", exist_ok=True)
+        base_dir = os.environ.get(
+            "REMOTE_CLICKER_DIR", os.path.expanduser(r"~\Documents")
+        )
+        os.makedirs(os.path.join(base_dir, "l"), exist_ok=True)
+        os.makedirs(os.path.join(base_dir, "r"), exist_ok=True)
         pyautogui.click()
         print("Clicked!")
         return "Clicked!", 200
