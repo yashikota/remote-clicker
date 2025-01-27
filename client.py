@@ -1,3 +1,5 @@
+import os
+
 import pyautogui
 from flask import Flask
 
@@ -7,6 +9,8 @@ app = Flask(__name__)
 @app.route("/click")
 def click():
     try:
+        os.makedirs(r"C:\l", exist_ok=True)
+        os.makedirs(r"C:\r", exist_ok=True)
         pyautogui.click()
         print("Clicked!")
         return "Clicked!", 200
